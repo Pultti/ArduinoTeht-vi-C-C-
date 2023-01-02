@@ -1,0 +1,36 @@
+                               //Käännöstehtävä 1
+
+void setup() {
+  Serial.begin(9600);
+  printSubroutine("This works fine");
+}
+
+void loop() {
+  if(Serial.available()>0)
+  {
+  };
+
+----------------------------------------------------------------------
+
+                                //Käännöstehtävä 2
+                                
+                                
+                                
+                                
+                                //Käännöstehtävä 3
+                                
+                                
+                                
+                                
+                                
+                                //Noppa
+                                
+                                
+                                
+                                
+                                //Oskilloskooppi
+                                
+                                
+                                
+                                
+                                //Sekunttikello
