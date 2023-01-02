@@ -1,2 +1,2 @@
-# ArduinoTeht-vi-C-C-
+# ArduinoTehtäviä-C-C++
 Tehtävät 1-4, readMe kansiossa tarkempi kuvaus
