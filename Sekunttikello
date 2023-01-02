@@ -1,0 +1,148 @@
+//Sekunttikello
+
+void alustaTimer(void);
+void Kello();
+void Aika(void);
+
+volatile int s = 0;
+volatile int m = 0;
+volatile int h = 0;
+
+bool start = false;
+
+void setup() {
+   Serial.begin(9600); 
+   Kello();   
+   alustaTimer();
+}
+
+void Kello()
+{
+   Serial.println("Haluatko antaa aloitusajan 1=Kyllä 2=Ei, \ns = start, s = pause, r = reset");    //Ohjeet käyttäjälle
+    while(Serial.available() == 0){
+
+    }
+        int aloitus = Serial.parseInt();
+        Serial.println(aloitus);
+
+        if(aloitus == 1){
+          Serial.println("anna tunnit");
+          while(Serial.available() == 0){
+          }
+          h = Serial.parseInt();
+          Serial.println(h);
+
+          Serial.println("anna minuutit");
+          while(Serial.available() == 0){
+          }
+          m = Serial.parseInt();
+          Serial.println(m);
+          
+          Serial.println("anna sekunnit");
+          while(Serial.available() == 0){
+          }
+          s = Serial.parseInt();
+          Serial.println(s);
+        }
+        
+         if(aloitus == 2){
+          }
+    alustaTimer;
+}
+
+ISR(TIMER1_COMPA_vect)
+{
+  if(start){
+    s++;
+    if( s > 59 ) {
+      s = 0;
+      m++;
+    }
+    if(m > 59){
+      s = 0;
+      m = 0;
+      h++;
+    }
+    Aika();
+  }
+}
+
+void loop(){
+  while(1){
+    if(Serial.available() > 0){
+      char c = Serial.read();
+      if(c == 's'){
+        //starttaa
+        TCCR1B |= (1 << CS12) | (1 << CS10);
+        start = true;
+      }
+      if(c == 'p'){
+        //pause
+        TCCR1B &= ~((1 << CS12) | (1 << CS10));
+        start = false;
+      }
+      if(c == 'r'){
+        //reset timer
+        TCCR1B &= ~((1 << CS12) | (1 << CS10));
+        s = 0;
+        m = 0;
+        h = 0;
+        Aika();
+      }
+    }
+  }
+}
+
+void alustaTimer(void)
+{
+  noInterrupts(); // Disabloidaan keskeytykset alustuksen ajaksi
+  TCCR1A = 0;
+  TCCR1B = 0;
+  TCCR1B |= (1 << WGM12); // Tämä bitti päälle ja timer on CTC moodissa
+
+  TCCR1B |= (1 << CS10); //Näillä kahdella bitillä B-rekisterissä
+  TCCR1B |= (0 << CS11); //Näillä kahdella bitillä B-rekisterissä
+  TCCR1B |= (1 << CS12); //asetetaan kellon jako 8:lla
+  
+  OCR1A = 15625;        // Vertailurekisteriin tarvitaan tämä arvo, jotta saadaan haluttu keskeytys per sekuntti
+  
+  TIMSK1 |= (1 << OCIE1A); //Timer HW:sta enabloidaan Output Compare Interrupt Enable
+  interrupts(); //Sallitaan keskeytykset alustuksen päätyttyä
+}
+
+void Aika(void){  //Tällä saadaan tulostumaan aika ja IF rakenteella se saadaan 00:00:00 muotoon
+  if (start)
+  {
+ 
+  if(s==59)
+  {
+    m++;
+    s = 0;
+    if (m==59)
+    {
+      m = 0;
+      h++;
+    }
+  }
+  if(h < 10)
+      {
+        Serial.print("0");
+      }
+    Serial.print(h);
+
+    Serial.print(':');
+
+      if(m < 10)
+      {
+        Serial.print("0");
+      }
+    Serial.print(m);
+
+    Serial.print(':');
+      if(s < 10)
+      {
+        Serial.print("0");
+      }
+    Serial.println(s);
+}
+}
