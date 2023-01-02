@@ -1,0 +1,113 @@
+//Noppa
+
+int satunnaisluku(void);
+bool nappiOnPainettu(void);
+void kirjoitaLukuSevenSegmentille(int);
+const int nappi = 2;
+const int G = 3;
+const int F = 4;
+const int E = 5;
+const int D = 6;
+const int C = 7;
+const int B = 8;
+const int A = 9;
+
+/* 
+ Numero taulukossa numerojen 1-6 ledien arvot 7-bittisinä
+ lukuina. Niistä muodostettu arvot 2-6 tuohon taulukkoon.
+ */
+ 
+const uint8_t numerot[6] = {0x30, 0x6d, 0x79, 0x33, 0x5b, 0x5f}; // HUOM! korvaa luvut 2-6 
+
+void setup() {
+  Serial.begin(9600); // debuggausta varten
+  randomSeed(analogRead(0));     // alustetaan lukugen.
+  pinMode(nappi, INPUT_PULLUP);   // 2 pinni kytkimena
+                                 // INPUT_PULLUP vetää
+                                 // pinnin ylös 5V
+  pinMode(A,OUTPUT);
+  pinMode(B,OUTPUT);
+  pinMode(C,OUTPUT);
+  pinMode(D,OUTPUT);
+  pinMode(E,OUTPUT);
+  pinMode(F,OUTPUT);
+  pinMode(G,OUTPUT);                           
+}
+
+void loop() {
+  //testirakenne eri funktioille
+ if(nappiOnPainettu()){
+   while(nappiOnPainettu());
+   kirjoitaLukuSevenSegmentille(satunnaisluku());
+   delay(5);
+ }
+}  
+
+/* Serial.read;
+
+
+if (nappiOnPainettu());
+{
+  Serial.println(satunnaisluku());
+  } */
+   
+ /*  while(1)
+   {
+      if(Serial.available() > 0)
+      {
+         //int arvo = Serial.read()-48;
+         //Serial.println(arvo);  
+         int arvo = Serial.parseInt();
+         Serial.println(arvo);
+         kirjoitaLukuSevenSegmentille(arvo);
+      }  */
+      
+
+  /*
+   * Tähän teidän pitää sitten, kun kaikki aliohjelmat on ensin yksittäin
+   * testattu yllä olevan kaltaisella testirakenteella, toteuttaa sen 
+   * elektronisen nopan toiminta käyttäen tehtyjä aliohjelmia. 
+   * - Tarkistetaan onko nappia painettu, jos on
+   *    - niin sitten arvotaan satunnainen luku
+   *    - ja tuo satunnainen luku kirjoitetaan 7-segmenttinäytölle
+   * - Nopan tulee toimia niin, että kytkimen painallus tuottaa
+   *   vain yhden arpomistuloksen ja tuon arpomistuloksen jälkeen 
+   *   tulos jää näytölle, kunnes seuraava tulos arvotaan.
+   */ 
+
+
+int satunnaisluku(void)
+{
+  return random(1,7);
+   /* 
+    *  Tähän teidän pitäisi kehittää aliohjelma, joka palauttaa
+    *  satunnaisluvun väliltä 1-6. Tämäkin kannattaa sitten
+    *  ensin testata, että se varmasti toimii oletetulla tavalla
+    */
+    
+} 
+bool nappiOnPainettu(void)
+{
+
+ if (digitalRead(nappi)) return true; 
+ 
+  return false;
+
+   /* 
+    * Tähän teidän pitäisi kehittää aliohjelma, joka lukee 
+    * bool tyyppiseen muuttujaan kytkin pinnin (pinni 2) tilan
+    * ja palauttaa sen sitten kutsuvalle ohjelmalle. Ja tämäkin
+    * kannattaa testata yksittäisenä aliohjelmana ja varmistua siitä,
+    * että pinnin 2 maadottaminen antaa true arvon ja jos pinniä ei
+    * maadoiteta, niin arvo = false.
+    */
+}
+void kirjoitaLukuSevenSegmentille(int luku)
+{
+   int bitit = numerot[luku-1]; // luku on välillä 1-6, siksi -1
+   for(int i = 0; i< 7; i++)
+   {
+      int bitti = (bitit>>i) & 0x01; // siirretään alimmaksi ja otetaan irti
+      digitalWrite(i+3,bitti);
+   }
+}
